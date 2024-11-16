@@ -1,6 +1,6 @@
 import { newUserDTO } from 'src/user/dtos/new-user.dtos';
 import { AuthService } from './auth.service';
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { UserDetails } from 'src/user/user.interface';
 import { ExistingUserDTO } from 'src/user/dtos/existing-user.dto';
 
@@ -14,8 +14,13 @@ export class AuthController {
   }
 
   @Post('login')
-  @HttpCode(HttpStatus.OK)
-  login(@Body() user: ExistingUserDTO): Promise<{ token: string } | null> {
-    return this.authService.login(user);
+  async login(@Body() existingUser: ExistingUserDTO) {
+    const token = await this.authService.login(existingUser);
+
+    if (!token) {
+      return { message: 'Invalid credentials' };
+    }
+
+    return token;
   }
 }

@@ -24,7 +24,7 @@ export class AuthService {
 
     const existingUser = await this.userService.findByEmail(email);
 
-    if (existingUser) return 'Email token!';
+    if (existingUser) return 'Email already exists!';
 
     const hashedPassword = await this.hashPassword(password);
 
@@ -38,12 +38,12 @@ export class AuthService {
   ): Promise<boolean> {
     return bcrypt.compare(password, hashedPassword);
   }
-
   async validateUser(
     email: string,
     password: string,
   ): Promise<UserDetails | string | null> {
     const user = await this.userService.findByEmail(email);
+
     const doesUserExist = !!user;
 
     if (!doesUserExist) return null;
