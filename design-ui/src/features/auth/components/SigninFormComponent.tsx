@@ -1,13 +1,46 @@
 import { Box, Button, Divider, Grid, InputLabel, TextField, Typography } from '@mui/material'
 import {FC, FormEvent} from 'react'
 import { Link } from 'react-router-dom';
+import UseInput from '../../../hooks/input/UseInput';
+import { validateEmail } from '../../../shared/utils/validator/email';
+import { validatePasswordLength } from '../../../shared/utils/validator/length';
 
 const SigninFormComponent: FC = () => {
+  const {
+    text: email,
+    shouldDisplayError: emailHasError,
+    textChangeHandler: emailChangeHandler,
+    inputBlurHandler: emailBlurHandler,
+    clearHandler: emailClearHandler,
+  } = UseInput(validateEmail);
 
-    const onSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
+  const {
+    text: password,
+    shouldDisplayError: passwordHasError,
+    textChangeHandler: passwordChangeHandler,
+    inputBlurHandler: passwordBlurHandler,
+    clearHandler: passwordClearHandler,
+  } = UseInput(validatePasswordLength);
+
+
+  const clearForm = () => {
+    emailClearHandler();
+    passwordClearHandler();
+  }
+
+  const onSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        console.log('Clicked')
+        if ( emailHasError || passwordHasError ) return;
+
+        if(
+          email.length === 0 ||
+          password.length === 0
+        )return;
+
+      console.log('USER:', email, password);
+
+      clearForm();
     }
 
   return (
@@ -21,12 +54,24 @@ const SigninFormComponent: FC = () => {
             <InputLabel sx={{fontWeight: 500, marginTop: 1, color: '#000000', }} htmlFor='email'>
             Seu Email:
             </InputLabel>
-            <TextField type='email' name='email' id='email' variant='outlined' size='small' />
+            <TextField 
+            value={email}
+            onChange={emailChangeHandler}
+            onBlur={emailBlurHandler}
+            error={emailHasError}
+            helperText={emailHasError ? 'Entre com seu email' : ''}
+            type='email' name='email' id='email' variant='outlined' size='small' />
 
             <InputLabel sx={{fontWeight: 500, marginTop: 1, color: '#000000', }} htmlFor='password'>
             Sua Senha:
             </InputLabel>
-            <TextField type='password' name='password' id='password' variant='outlined' size='small' placeholder='Minimo 6 caractes' />
+            <TextField 
+            value={password}
+            onChange={passwordChangeHandler}
+            onBlur={passwordBlurHandler}
+            error={passwordHasError}
+            helperText={passwordHasError ? 'No minino 6 caracteres' : ''}
+            type='password' name='password' id='password' variant='outlined' size='small' placeholder='Minimo 6 caractes' />
             <Button 
             variant='contained'
             style={{

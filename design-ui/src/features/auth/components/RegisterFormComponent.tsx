@@ -1,13 +1,73 @@
 import { Box, Button, Divider, Grid, InputLabel, TextField, Typography } from '@mui/material'
 import {FC, FormEvent} from 'react'
 import { Link } from 'react-router-dom';
+import UseInput from '../../../hooks/input/UseInput';
+import { validateNameLength, validatePasswordLength } from '../../../shared/utils/validator/length';
+import { validateEmail } from '../../../shared/utils/validator/email';
+import { NewUser } from '../models/NewUser';
 
 const RegisterFormComponent: FC = () => {
+  const {
+    text: name,
+    shouldDisplayError: nameHasError,
+    textChangeHandler: nameChangeHandler,
+    inputBlurHandler: nameBlurHandler,
+    clearHandler: nameClearHandler,
+  } = UseInput(validateNameLength);
 
-    const onSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
+  const {
+    text: email,
+    shouldDisplayError: emailHasError,
+    textChangeHandler: emailChangeHandler,
+    inputBlurHandler: emailBlurHandler,
+    clearHandler: emailClearHandler,
+  } = UseInput(validateEmail);
+
+  const {
+    text: password,
+    shouldDisplayError: passwordHasError,
+    textChangeHandler: passwordChangeHandler,
+    inputBlurHandler: passwordBlurHandler,
+    clearHandler: passwordClearHandler,
+  } = UseInput(validatePasswordLength);
+
+  const {
+    text: confirmPassword,
+    shouldDisplayError: confirmPasswordHasError,
+    textChangeHandler: confirmPasswordChangeHandler,
+    inputBlurHandler: confirmPasswordBlurHandler,
+    clearHandler: confirmPasswordClearHandler,
+  } = UseInput(validatePasswordLength);
+
+  const clearForm = () => {
+    nameClearHandler();
+    emailClearHandler();
+    passwordClearHandler();
+    confirmPasswordClearHandler();
+  }
+
+  const onSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        console.log('Clicked')
+        if (password !== confirmPassword) return;
+
+        if (nameHasError || emailHasError || passwordHasError || confirmPasswordHasError) return;
+
+        if(
+          name.length === 0 ||
+          email.length === 0 ||
+          password.length === 0 || 
+          confirmPassword.length === 0
+        )
+        return;
+
+        const newUser: NewUser = {
+          name, email, password
+        }
+
+      console.log('NEW USER:', newUser);
+
+      clearForm();
     }
 
   return (
@@ -15,27 +75,51 @@ const RegisterFormComponent: FC = () => {
       <form onSubmit={onSubmitHandler}>
         <Grid container direction='column' justifyContent='flex-start'>
             <Typography variant='h4' component='h1'>
-                Criar sua conta
+                Crie sua conta
             </Typography>
             <InputLabel sx={{fontWeight: 500, marginTop: 1, color: '#000000', }} htmlFor='name'>
             Seu Nome:
             </InputLabel>
-            <TextField type='text' name='text' id='name' variant='outlined' size='small' />
+            <TextField 
+            value={name}
+            onChange={nameChangeHandler}
+            onBlur={nameBlurHandler}
+            error={nameHasError}
+            helperText={nameHasError ? 'Entre com seu nome' : ''}
+            type='text' name='text' id='name' variant='outlined' size='small' />
 
             <InputLabel sx={{fontWeight: 500, marginTop: 1, color: '#000000', }} htmlFor='email'>
             Seu Email:
             </InputLabel>
-            <TextField type='email' name='email' id='email' variant='outlined' size='small' />
+            <TextField 
+            value={email}
+            onChange={emailChangeHandler}
+            onBlur={emailBlurHandler}
+            error={emailHasError}
+            helperText={emailHasError ? 'Entre com seu email' : ''}
+            type='email' name='email' id='email' variant='outlined' size='small' />
 
             <InputLabel sx={{fontWeight: 500, marginTop: 1, color: '#000000', }} htmlFor='password'>
             Sua Senha:
             </InputLabel>
-            <TextField type='password' name='password' id='password' variant='outlined' size='small' placeholder='Minimo 6 caractes' />
+            <TextField 
+            value={password}
+            onChange={passwordChangeHandler}
+            onBlur={passwordBlurHandler}
+            error={passwordHasError}
+            helperText={passwordHasError ? 'No minino 6 caracteres' : ''}
+            type='password' name='password' id='password' variant='outlined' size='small' placeholder='Minimo 6 caractes' />
 
             <InputLabel sx={{fontWeight: 500, marginTop: 1, color: '#000000', }} htmlFor='confirmPassword'>
             Confirme a Senha:
             </InputLabel>
-            <TextField type='password' name='confirmPassword' id='confirmPassword' variant='outlined' size='small' placeholder='Confirmar senha' />
+            <TextField 
+             value={confirmPassword}
+             onChange={confirmPasswordChangeHandler}
+             onBlur={confirmPasswordBlurHandler}
+             error={confirmPassword.length > 0 && password !== confirmPassword}
+             helperText={confirmPassword.length > 0 && password !== confirmPassword ? 'Senha incompativel' : ''}
+            type='password' name='confirmPassword' id='confirmPassword' variant='outlined' size='small' placeholder='Confirmar senha' />
             <Button 
             variant='contained'
             style={{
