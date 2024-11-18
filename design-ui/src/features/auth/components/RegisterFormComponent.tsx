@@ -1,10 +1,12 @@
-import { Box, Button, Divider, Grid, InputLabel, TextField, Typography } from '@mui/material'
-import {FC, FormEvent} from 'react'
-import { Link } from 'react-router-dom';
+import { Box, Button, CircularProgress, Divider, Grid, InputLabel, TextField, Typography } from '@mui/material'
+import {FC, FormEvent, useEffect} from 'react'
+import { Link, useNavigate } from 'react-router-dom';
 import UseInput from '../../../hooks/input/UseInput';
 import { validateNameLength, validatePasswordLength } from '../../../shared/utils/validator/length';
 import { validateEmail } from '../../../shared/utils/validator/email';
 import { NewUser } from '../models/NewUser';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux/hook';
+import {register, reset} from '../authSlice';
 
 const RegisterFormComponent: FC = () => {
   const {
@@ -44,7 +46,21 @@ const RegisterFormComponent: FC = () => {
     emailClearHandler();
     passwordClearHandler();
     confirmPasswordClearHandler();
-  }
+  };
+
+  const dispatch = useAppDispatch();
+
+  const {isLoading, isSuccess} = useAppSelector((state) => state.auth);
+
+  const navigate = useNavigate();
+
+  useEffect(()=> {
+    if (isSuccess) {
+      dispatch(reset());
+      clearForm();
+      navigate('/signin');
+    }
+  }, [isSuccess, dispatch]);
 
   const onSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -67,8 +83,10 @@ const RegisterFormComponent: FC = () => {
 
       console.log('NEW USER:', newUser);
 
-      clearForm();
-    }
+      dispatch(register(newUser));
+    };
+
+    if (isLoading) return <CircularProgress sx={{marginTop: '64px'}} color='primary' />
 
   return (
     <Box sx={{border: 1, padding: 2, borderColor: '#cccccc', width: '350px', marginTop: 2}}>
@@ -98,8 +116,7 @@ const RegisterFormComponent: FC = () => {
             error={emailHasError}
             helperText={emailHasError ? 'Entre com seu email' : ''}
             type='email' name='email' id='email' variant='outlined' size='small' />
-
-            <InputLabel sx={{fontWeight: 500, marginTop: 1, color: '#000000', }} htmlFor='password'>
+             <InputLabel sx={{fontWeight: 500, marginTop: 1, color: '#000000', }} htmlFor='password'>
             Sua Senha:
             </InputLabel>
             <TextField 
@@ -109,7 +126,6 @@ const RegisterFormComponent: FC = () => {
             error={passwordHasError}
             helperText={passwordHasError ? 'No minino 6 caracteres' : ''}
             type='password' name='password' id='password' variant='outlined' size='small' placeholder='Minimo 6 caractes' />
-
             <InputLabel sx={{fontWeight: 500, marginTop: 1, color: '#000000', }} htmlFor='confirmPassword'>
             Confirme a Senha:
             </InputLabel>
@@ -175,4 +191,4 @@ const RegisterFormComponent: FC = () => {
   )
 }
 
-export default RegisterFormComponent
+export default RegisterFormComponent;
