@@ -1,9 +1,12 @@
-import { Box, Button, Divider, Grid, InputLabel, TextField, Typography } from '@mui/material'
-import {FC, FormEvent} from 'react'
-import { Link } from 'react-router-dom';
+import { Box, Button, CircularProgress, Divider, Grid, InputLabel, TextField, Typography } from '@mui/material'
+import {FC, FormEvent, useEffect} from 'react'
+import { Link, useNavigate } from 'react-router-dom';
 import UseInput from '../../../hooks/input/UseInput';
 import { validateEmail } from '../../../shared/utils/validator/email';
 import { validatePasswordLength } from '../../../shared/utils/validator/length';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux/hook';
+import { LoginUser } from '../models/LoginUser.interface';
+import { reset, login } from '../authSlice';
 
 const SigninFormComponent: FC = () => {
   const {
@@ -26,7 +29,25 @@ const SigninFormComponent: FC = () => {
   const clearForm = () => {
     emailClearHandler();
     passwordClearHandler();
-  }
+  };
+
+  const dispatch = useAppDispatch();
+
+  const {isLoading, isSuccess, isAuthenticated} = useAppSelector((state) => state.auth);
+
+  const navigate = useNavigate();
+
+  useEffect(()=> {
+    if (isSuccess) {
+      dispatch(reset());
+      clearForm();
+    }
+  }, [isSuccess, dispatch]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    navigate('/');
+  }, [isAuthenticated]);
 
   const onSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -38,10 +59,12 @@ const SigninFormComponent: FC = () => {
           password.length === 0
         )return;
 
-      console.log('USER:', email, password);
+      const loginUser: LoginUser = {email,password};
 
-      clearForm();
+      dispatch(login(loginUser));
     }
+
+    if (isLoading) return <CircularProgress sx={{marginTop: '64px'}} color='primary' />
 
   return (
     <Box sx={{border: 1, padding: 2, borderColor: '#cccccc', width: '350px', marginTop: 2}}>

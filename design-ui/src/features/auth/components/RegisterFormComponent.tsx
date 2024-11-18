@@ -50,7 +50,7 @@ const RegisterFormComponent: FC = () => {
 
   const dispatch = useAppDispatch();
 
-  const {isLoading, isSuccess} = useAppSelector((state) => state.auth);
+  const {isLoading, isSuccess } = useAppSelector((state) => state.auth);
 
   const navigate = useNavigate();
 
