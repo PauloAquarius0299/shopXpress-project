@@ -1,6 +1,6 @@
 import { UserService } from './../user/user.service';
 import * as bcrypt from 'bcrypt';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { newUserDTO } from 'src/user/dtos/new-user.dtos';
 import { UserDetails } from 'src/user/user.interface';
 import { ExistingUserDTO } from 'src/user/dtos/existing-user.dto';
@@ -24,7 +24,11 @@ export class AuthService {
 
     const existingUser = await this.userService.findByEmail(email);
 
-    if (existingUser) return 'Email already exists!';
+    if (existingUser)
+      throw new HttpException(
+        'Já existe uma conta com esse e-mail',
+        HttpStatus.CONFLICT,
+      );
 
     const hashedPassword = await this.hashPassword(password);
 
@@ -64,9 +68,18 @@ export class AuthService {
     const { email, password } = existingUser;
     const user = await this.validateUser(email, password);
 
-    if (!user) return null;
+    if (!user) throw new HttpException('Credencias incorretas', HttpStatus.UNAUTHORIZED);
 
     const jwt = await this.jwtService.signAsync({ user });
     return { token: jwt };
+  }
+
+  async verifyJwt(jwt: string): Promise<{ exp: number }> {
+    try {
+      const { exp } = await this.jwtService.verifyAsync(jwt);
+      return { exp };
+    } catch (error) {
+      throw new HttpException('Jwt invalido', HttpStatus.UNAUTHORIZED);
+    }
   }
 }
