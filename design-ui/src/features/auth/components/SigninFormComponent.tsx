@@ -96,6 +96,10 @@ const SigninFormComponent: FC = () => {
             helperText={passwordHasError ? 'No minino 6 caracteres' : ''}
             type='password' name='password' id='password' variant='outlined' size='small' placeholder='Minimo 6 caractes' />
             <Button 
+            disabled={
+              !validatePasswordLength(password) ||
+              !validateEmail(email)
+            }
             variant='contained'
             style={{
                 width: '100%',

@@ -1,15 +1,18 @@
-import { logout } from "../features/auth/authSlice";
+import { useEffect } from "react";
+import { logout, selectedUser } from "../features/auth/authSlice";
 import { useAppDispatch, useAppSelector } from "../hooks/redux/hook";
 
 
 const HomePage = () => {
   const dispatch = useAppDispatch();
 
-  const { user} = useAppSelector(
-    (state) => state.auth
+  const { user, jwt} = useAppSelector(
+    selectedUser
   );
 
-  console.log(6, user);
+  useEffect(()=> {
+    console.log(123, user, jwt)
+  }, [user]);
 
   const logoutHandler = () => {
     dispatch(logout());
