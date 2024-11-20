@@ -30,6 +30,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:e2e": "cypress open",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -51,6 +52,7 @@
     ]
   },
   "devDependencies": {
-    "@types/jwt-decode": "^2.2.1"
+    "@types/jwt-decode": "^2.2.1",
+    "cypress": "^13.16.0"
   }
 }
