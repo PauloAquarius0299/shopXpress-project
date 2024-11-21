@@ -29,7 +29,17 @@ const HeaderComponent = () => {
         <Box>
         <AppBar position='static' sx={{backgroundColor: '#ffa500', color: 'white', padding: '4px'}}>
             <Toolbar sx={{display: 'flex', justifyContent: 'space-between'}}>
-                <img onClick={() => navigate('/')} style={{width: '120px', height:'120px', paddingTop: '10px', cursor: 'pointer'}} src='/FreeT.png' alt='logo shopxpress' />
+            <img
+            onClick={() => navigate('/')}
+            style={{
+              width: '120px',
+              height: '120px',
+              paddingTop: '10px',
+              cursor: 'pointer',
+            }}
+            src='/freet.png'
+            alt='shop xpress logo'
+          />
                 <div style={{display: 'flex'}}>
                     <div>
                         <div >Olá, {user?.name}</div>
