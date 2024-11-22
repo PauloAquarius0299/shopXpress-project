@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-do
 import RegisterPage from "./pages/RegisterPage";
 import SignPage from "./pages/SigninPage";
 import HomePage from "./pages/HomePage";
+import CartPage from './pages/CartPage';
 import PrivateRoute from "./features/auth/components/PrivateRoute";
 
 import { store} from './store';
@@ -14,6 +15,7 @@ function App() {
       <Router>
         <Routes>
           <Route path='/' element={<PrivateRoute page={<HomePage />} /> } />
+          <Route path='/cart' element={<PrivateRoute page={<CartPage />} />} />
           <Route path='/register' element={<RegisterPage /> } />
           <Route path='/signin' element={<SignPage /> } />
           <Route path='*' element={<Navigate to='/' />} />
