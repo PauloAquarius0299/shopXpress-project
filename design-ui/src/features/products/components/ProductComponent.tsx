@@ -17,11 +17,19 @@ interface ProductComponentProps {
 
 const ProductComponent: FC<ProductComponentProps> =({product}) => {
 
-    const { cart, products } = useAppSelector((state) => state.product);
+    const dispatch = useAppDispatch();
 
     const [count, setCount] = useState(0);
 
-    const dispatch = useAppDispatch();
+    const { cart } = useAppSelector((state) => state.product);
+
+    let qty = 0;
+
+    const cartItem = cart.find((item) => item._id === product._id);
+ 
+    if (cartItem) {
+    qty = cartItem.quantity;
+    }
 
     return (
         <Card sx={{width: 300, minWidth: 300}}> 
